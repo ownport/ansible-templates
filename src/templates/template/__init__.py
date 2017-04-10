@@ -188,23 +188,6 @@ class Templar:
         self._clean_regex = re.compile(r'(?:%s|%s|%s|%s)' % (self.variable_start, self.block_start, self.block_end, self.variable_end))
         self._no_type_regex = re.compile(r'.*\|\s*(?:%s)\s*(?:%s)?$' % ('|'.join(STRING_TYPE_FILTERS), self.variable_end))
 
-    def _get_filters(self):
-        '''
-        Returns filter plugins, after loading and caching them if need be
-        '''
-
-        if self._filters is not None:
-            return self._filters.copy()
-
-        plugins = [x for x in get_all_filters()]
-
-        self._filters = dict()
-        for fp in plugins:
-            self._filters.update(fp.filters())
-        self._filters.update(self._get_tests())
-
-        return self._filters.copy()
-
     def _get_extensions(self):
         '''
         Return jinja2 extensions to load.
@@ -448,10 +431,6 @@ class Templar:
                     (key,val) = pair.split(':')
                     key = key.strip()
                     setattr(myenv, key, ast.literal_eval(val.strip()))
-
-            #FIXME: add tests
-            myenv.filters.update(self._get_filters())
-            myenv.tests.update(self._get_tests())
 
             if escape_backslashes:
                 # Allow users to specify backslashes in playbooks as "\\"
