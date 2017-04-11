@@ -25,3 +25,8 @@ compile: clean
 test: clean
 	@ echo "[INFO] Testing ..."
 	@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(shell pwd)/src/ test-suites
+
+test-with-coverage: clean
+	@ echo "[INFO] Testing ..."
+	@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$(shell pwd)/src/ test-suites --cov=templates \
+	    --cov-report term-missing --cov-config=.coveragerc
