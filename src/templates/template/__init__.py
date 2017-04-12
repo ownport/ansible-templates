@@ -11,7 +11,6 @@ from io import StringIO
 from numbers import Number
 
 from templates.six import string_types, text_type
-from templates.filters import all as get_all_filters
 from templates.template.safe_eval import safe_eval
 from templates.template.template import J2Template
 from templates.template.vars import J2Vars
@@ -19,7 +18,6 @@ from templates.utils.unicode import to_unicode, to_str
 from templates.errors import TemplatesError, TemplatesFilterError, TemplatesUndefinedVariable
 
 from jinja2 import Environment
-from jinja2.loaders import FileSystemLoader
 from jinja2.exceptions import TemplateSyntaxError, UndefinedError
 from jinja2.utils import concat as j2_concat
 from jinja2.runtime import Context, StrictUndefined
