@@ -1,6 +1,7 @@
 
 import pytest
 
+from templates import template
 from templates.template import Templar
 from templates.errors import TemplatesError
 from templates.errors import TemplatesUndefinedVariable
@@ -74,3 +75,32 @@ def test_variables_must_be_a_dict_for_set_available_variables():
     templar = Templar(variables=VARIABLES)
     with pytest.raises(AssertionError):
         assert templar.set_available_variables("foo=bam")
+
+
+def test_templar_escape_backslashes():
+    # Rule of thumb: If escape backslashes is True you should end up with
+    # the same number of backslashes as when you started.
+
+    templar = Templar(variables=VARIABLES)
+    assert templar.template("\t{{foo}}", escape_backslashes=True) == "\tbar"
+    assert templar.template("\t{{foo}}", escape_backslashes=False) == "\tbar"
+    assert templar.template("\\{{foo}}", escape_backslashes=True) == "\\bar"
+    assert templar.template("\\{{foo}}", escape_backslashes=False) == "\\bar"
+    assert templar.template("\\{{foo + '\t' }}", escape_backslashes=True) == "\\bar\t"
+    assert templar.template("\\{{foo + '\t' }}", escape_backslashes=False) == "\\bar\t"
+    assert templar.template("\\{{foo + '\\t' }}", escape_backslashes=True) == "\\bar\\t"
+    assert templar.template("\\{{foo + '\\t' }}", escape_backslashes=False) == "\\bar\t"
+    assert templar.template("\\{{foo + '\\\\t' }}", escape_backslashes=True) == "\\bar\\\\t"
+    assert templar.template("\\{{foo + '\\\\t' }}", escape_backslashes=False) == "\\bar\\t"
+
+
+def test_template_jinja2_extensions():
+
+    templar = Templar(variables=VARIABLES)
+
+    old_exts = template.DEFAULT_JINJA2_EXTENSIONS
+    try:
+        template.DEFAULT_JINJA2_EXTENSIONS = "foo,bar"
+        assert templar._get_extensions() == ['foo', 'bar']
+    finally:
+        template.DEFAULT_JINJA2_EXTENSIONS = old_exts
